@@ -1,0 +1,59 @@
+service: ServerlessReto
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:810502289364:table/UserTable
+      
+functions:
+  createUsers:
+    handler: src/Users.addUsers
+    events:
+      - httpApi:
+          path: /user
+          method: post
+  getUsers:
+    handler: src/Users.getUsers
+    events:
+      - httpApi:
+          path: /users
+          method: get
+  getUser:
+    handler: src/Users.getUser
+    events:
+      - httpApi:
+          path: /user/{id}
+          method: get
+  getVehicles:
+    handler: src/Swapi.getVehicles
+    events:
+      - httpApi:
+          path: /swapi/vehicles
+          method: get
+  getVehicle:
+    handler: src/Swapi.getVehicle
+    events:
+      - httpApi:
+          path: /swapi/vehicle/{id}
+          method: get
+
+resources:
+  Resources:
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UserTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
